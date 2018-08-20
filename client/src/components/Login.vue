@@ -8,11 +8,11 @@
       <div class="px-4 py-2">
         <form>
           <v-text-field label="E-Mail" v-model="email"></v-text-field><br>
-          <v-text-field label="Password" v-model="password"></v-text-field>
+          <v-text-field type="password" label="Password" v-model="password"></v-text-field>
         </form><br>
       </div>
       <div class="error" v-html="error"></div>
-      <v-btn dark class="cyan" @click="register">Login</v-btn>
+      <v-btn dark class="cyan" @click="login">Login</v-btn>
     </div>
   </v-flex>
 </v-layout>
@@ -25,8 +25,9 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
-    };
+      password: "",
+      error: null
+    }
   },
   methods: {
     async login() {

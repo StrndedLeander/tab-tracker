@@ -16,7 +16,6 @@ module.exports = {
     try {
       const user = await User.create(req.body)
       const userJson = user.toJSON()
-      console.log(userJson)
       res.send(userJson)
     } catch (err) {
       res.status(400).send({
@@ -35,25 +34,29 @@ module.exports = {
           email: email
         }
       })
-      if (!user) {
+      try {
+        if (!user) {
+          return res.status(403).send({
+            error: 'User with this login information not found!'
+          })
+        } else {
+          const isValid = await user.comparePassword(password)
+          console.log(isValid)
+          if (isValid) {
+            const userJson = user.toJSON()
+            return res.send({
+              user: userJson,
+              token: jwtSignUser(userJson)
+            })
+          }
+        }
+      } catch (err) {
         return res.status(403).send({
-          error: 'The login information was incorrect'
+          error: 'Login information incorrect!'
         })
       }
-
-      const isPasswordValid = await user.comparePassword(password)
-
-      if (!isPasswordValid) {
-        return res.status(403).send({
-          error: 'The login information was incorrect'
-        })
-      }
-      const userJson = user.toJSON()
-      res.send({
-        user: userJson,
-        token: jwtSignUser(userJson)
-      })
     } catch (err) {
+      console.log(err)
       res.status(500).send({
         error: 'An error occured trying to log in'
       })
